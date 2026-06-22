@@ -1220,12 +1220,6 @@ body.dark-mode .cart-modal-content {
     padding: 1.5rem;
     border-bottom: 1px solid var(--border-color);
 }
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
 
 .close-cart {
     background: none;
