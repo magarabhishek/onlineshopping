@@ -6,7 +6,7 @@
     --accent-color: #f5576c;
     --text-color: #333333;
     --light-text: #666666;
-    --bg-color: #ffffff0a;
+    --bg-color: #ffffff;
     --light-bg: #f8f9fa;
     --border-color: #e0e0e0;
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -1568,57 +1568,4 @@ select:focus-visible,
 textarea:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
-}
-/* Mobile Phones */
-@media (max-width: 576px) {
-    .navbar-container {
-        padding: 1rem;
-    }
-
-    .nav-menu {
-        display: none;
-    }
-
-    .hamburger-menu {
-        display: flex;
-    }
-
-    .hero-title {
-        font-size: 2rem;
-    }
-
-    .hero {
-        padding: 4rem 1rem;
-        min-height: auto;
-    }
-
-    .products-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .contact-content {
-        grid-template-columns: 1fr;
-    }
-
-    .newsletter-form {
-        flex-direction: column;
-    }
-}
-
-/* Tablets */
-@media (min-width: 577px) and (max-width: 992px) {
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .hero-title {
-        font-size: 2.8rem;
-    }
-}
-
-/* Desktop */
-@media (min-width: 993px) {
-    .products-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
 }
