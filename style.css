@@ -1,18 +1,30 @@
+/* ========================================
+   CSS PRODUCTION REFACTOR - ONLINE SHOPPING
+   ======================================== */
+
+/* ========================================
+   1. CSS VARIABLES & DESIGN TOKENS
+   ======================================== */
 
 :root {
-    /* Color Scheme - Light Mode */
+    /* Color Palette - Light Mode */
     --primary-color: #667eea;
     --secondary-color: #764ba2;
     --accent-color: #f5576c;
+    --success-color: #10b981;
     --text-color: #333333;
     --light-text: #666666;
     --bg-color: #ffffff;
     --light-bg: #f8f9fa;
     --border-color: #e0e0e0;
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --shadow-hover: 0 8px 16px rgba(102, 126, 234, 0.3);
     
-    /* Spacing */
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.3);
+    --shadow-lg: 0 12px 20px rgba(0, 0, 0, 0.2);
+    --shadow-xl: -24px 0 80px rgba(0, 0, 0, 0.18);
+    
+    /* Spacing Scale */
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 1.5rem;
@@ -25,20 +37,33 @@
     --radius-lg: 12px;
     --radius-xl: 16px;
     
-    /* Transitions */
-    --transition: all 0.3s ease;
+    /* Transitions - Optimized for specific properties */
+    --transition-fast: 0.2s ease;
+    --transition-base: 0.3s ease;
+    --transition-slow: 0.6s ease;
+    
+    /* Z-Index Scale */
+    --z-dropdown: 50;
+    --z-sticky: 100;
+    --z-modal-overlay: 999;
+    --z-modal: 1000;
+    --z-loading: 9999;
 }
 
-/* Dark Mode Variables */
+/* Dark Mode Color Overrides */
 body.dark-mode {
     --text-color: #f0f0f0;
     --light-text: #b0b0b0;
     --bg-color: #1a1a1a;
     --light-bg: #2d2d2d;
     --border-color: #404040;
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-hover: 0 8px 16px rgba(102, 126, 234, 0.5);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 16px rgba(102, 126, 234, 0.5);
 }
+
+/* ========================================
+   2. GLOBAL BASE STYLES
+   ======================================== */
 
 * {
     margin: 0;
@@ -55,25 +80,102 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 a {
     text-decoration: none;
     color: inherit;
-    transition: var(--transition);
+    transition: color var(--transition-base), opacity var(--transition-base);
 }
 
 button {
     cursor: pointer;
     border: none;
     font-family: inherit;
-    transition: var(--transition);
+    transition: background-color var(--transition-base), transform var(--transition-fast), box-shadow var(--transition-base);
 }
 
-/* ==================== 
-   Loading Animation
-   ==================== */
+/* Scrollbar Styling - Modern Browsers */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 5px;
+    transition: background var(--transition-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* ========================================
+   3. ANIMATIONS & KEYFRAMES
+   ======================================== */
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* ========================================
+   4. LOADING ANIMATION
+   ======================================== */
 
 .loading-animation {
     position: fixed;
@@ -86,7 +188,7 @@ button {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    z-index: var(--z-loading);
     animation: fadeOut 0.5s ease-out 1.5s forwards;
 }
 
@@ -105,25 +207,18 @@ button {
     font-weight: 600;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        visibility: hidden;
-    }
-}
+/* ========================================
+   5. NAVIGATION BAR
+   ======================================== */
 
 .navbar {
     background: var(--bg-color);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-sm);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: var(--z-sticky);
     border-bottom: 2px solid var(--border-color);
-    transition: var(--transition);
+    transition: box-shadow var(--transition-base), background-color var(--transition-base);
 }
 
 .navbar-container {
@@ -145,6 +240,7 @@ button {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    white-space: nowrap;
 }
 
 .logo-icon {
@@ -162,6 +258,7 @@ button {
     color: var(--text-color);
     position: relative;
     padding-bottom: 0.5rem;
+    transition: color var(--transition-base);
 }
 
 .nav-link::after {
@@ -172,12 +269,17 @@ button {
     width: 0;
     height: 2px;
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    transition: width 0.3s ease;
+    transition: width var(--transition-base);
 }
 
 .nav-link:hover::after,
 .nav-link.active::after {
     width: 100%;
+}
+
+.nav-link:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
 }
 
 .navbar-right {
@@ -192,12 +294,17 @@ button {
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 50%;
-    transition: var(--transition);
+    transition: background-color var(--transition-base), transform var(--transition-fast);
 }
 
 .theme-toggle:hover {
     background: var(--light-bg);
     transform: scale(1.1);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
 }
 
 .cart-icon-container {
@@ -215,12 +322,17 @@ button {
     justify-content: center;
     font-size: 1.2rem;
     position: relative;
-    transition: var(--transition);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
 }
 
 .cart-btn:hover {
     transform: scale(1.1);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.cart-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
 }
 
 .cart-count {
@@ -244,6 +356,8 @@ button {
     flex-direction: column;
     cursor: pointer;
     gap: 0.4rem;
+    padding: 0.5rem;
+    background: none;
 }
 
 .hamburger-menu span {
@@ -251,12 +365,17 @@ button {
     height: 3px;
     background: var(--text-color);
     border-radius: 2px;
-    transition: var(--transition);
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
 }
 
-/* ==================== 
-   Hero Section
-   ==================== */
+.hamburger-menu:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
+}
+
+/* ========================================
+   6. HERO SECTION
+   ======================================== */
 
 .hero {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -295,6 +414,7 @@ button {
     font-weight: 700;
     margin-bottom: 1rem;
     animation: slideDown 0.8s ease-out;
+    line-height: 1.2;
 }
 
 .hero-subtitle {
@@ -311,14 +431,20 @@ button {
     font-size: 1rem;
     font-weight: 700;
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-hover);
-    transition: var(--transition);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
     animation: slideUp 0.8s ease-out 0.4s both;
+    cursor: pointer;
 }
 
 .hero-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-lg);
+}
+
+.hero-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
 .hero-discount {
@@ -339,7 +465,7 @@ button {
     align-items: center;
     color: white;
     font-weight: 700;
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
     animation: pulse 2s ease-in-out infinite;
 }
 
@@ -351,41 +477,9 @@ button {
     font-size: 1rem;
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-/* ==================== 
-   Newsletter Section
-   ==================== */
+/* ========================================
+   7. NEWSLETTER SECTION
+   ======================================== */
 
 .newsletter-section {
     background: linear-gradient(135deg, var(--light-bg), var(--light-bg));
@@ -422,11 +516,13 @@ button {
     font-size: 1rem;
     background: var(--bg-color);
     color: var(--text-color);
-    transition: var(--transition);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 #newsletterEmail:focus {
-    outline: 2px solid var(--primary-color);
+    outline: none;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .newsletter-btn {
@@ -435,17 +531,23 @@ button {
     padding: 0.8rem 2rem;
     border-radius: var(--radius-md);
     font-weight: 700;
-    transition: var(--transition);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
+    cursor: pointer;
 }
 
 .newsletter-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
 }
 
-/* ==================== 
-   Shop Section
-   ==================== */
+.newsletter-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   8. SHOP SECTION
+   ======================================== */
 
 .shop {
     padding: 4rem 2rem;
@@ -466,6 +568,10 @@ button {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+
+/* ========================================
+   9. SEARCH & FILTER SECTION
+   ======================================== */
 
 .search-filter-container {
     background: var(--light-bg);
@@ -491,7 +597,7 @@ button {
     font-size: 1rem;
     background: var(--bg-color);
     color: var(--text-color);
-    transition: var(--transition);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .search-input:focus {
@@ -505,6 +611,7 @@ button {
     right: 1rem;
     font-size: 1.2rem;
     opacity: 0.5;
+    pointer-events: none;
 }
 
 .filter-controls {
@@ -535,7 +642,7 @@ button {
     color: var(--text-color);
     font-size: 1rem;
     cursor: pointer;
-    transition: var(--transition);
+    transition: border-color var(--transition-base);
 }
 
 .filter-select:focus {
@@ -554,17 +661,23 @@ button {
     border-radius: var(--radius-md);
     font-weight: 600;
     align-self: flex-end;
-    transition: var(--transition);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
+    cursor: pointer;
 }
 
 .reset-filters-btn:hover {
     transform: scale(1.05);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
 }
 
-/* ==================== 
-   Products Grid
-   ==================== */
+.reset-filters-btn:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   10. PRODUCTS GRID
+   ======================================== */
 
 .products-grid {
     display: grid;
@@ -577,14 +690,20 @@ button {
     background: var(--bg-color);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
     border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
 }
 
 .product-card:hover {
     transform: translateY(-8px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.product-card:focus-within {
+    box-shadow: 0 0 0 2px var(--primary-color);
 }
 
 .product-image {
@@ -604,7 +723,7 @@ button {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0);
-    transition: background 0.3s ease;
+    transition: background var(--transition-base);
 }
 
 .product-card:hover .product-image::after {
@@ -613,6 +732,9 @@ button {
 
 .product-info {
     padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .product-category {
@@ -625,6 +747,7 @@ button {
     font-weight: 700;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
+    width: fit-content;
 }
 
 .product-name {
@@ -632,6 +755,7 @@ button {
     font-weight: 700;
     margin-bottom: 0.5rem;
     color: var(--text-color);
+    line-height: 1.4;
 }
 
 .product-price {
@@ -655,6 +779,7 @@ button {
     border-radius: 4px;
     font-size: 0.8rem;
     font-weight: 700;
+    display: inline-block;
 }
 
 .add-to-cart-btn {
@@ -665,16 +790,23 @@ button {
     border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 1rem;
-    transition: var(--transition);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
+    cursor: pointer;
+    margin-top: auto;
 }
 
 .add-to-cart-btn:hover {
     transform: scale(1.05);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
 }
 
 .add-to-cart-btn:active {
     transform: scale(0.98);
+}
+
+.add-to-cart-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
 }
 
 .no-products-message {
@@ -682,20 +814,12 @@ button {
     padding: 3rem;
     font-size: 1.2rem;
     color: var(--light-text);
+    grid-column: 1 / -1;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-/* ==================== 
-   Featured Section
-   ==================== */
+/* ========================================
+   11. FEATURED SECTION
+   ======================================== */
 
 .featured-section {
     background: linear-gradient(135deg, var(--light-bg), var(--bg-color));
@@ -719,7 +843,7 @@ button {
     color: white;
     text-align: center;
     cursor: pointer;
-    transition: var(--transition);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -728,11 +852,16 @@ button {
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
 }
 
+.category-card:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 4px;
+}
+
 .category-icon {
     font-size: 3.5rem;
     display: block;
     margin-bottom: 1rem;
-    transition: var(--transition);
+    transition: transform var(--transition-fast);
 }
 
 .category-card:hover .category-icon {
@@ -749,9 +878,9 @@ button {
     opacity: 0.9;
 }
 
-/* ==================== 
-   Testimonials Section
-   ==================== */
+/* ========================================
+   12. TESTIMONIALS SECTION
+   ======================================== */
 
 .testimonials-section {
     padding: 4rem 2rem;
@@ -774,12 +903,12 @@ button {
     padding: 2rem;
     border-radius: var(--radius-lg);
     border-left: 4px solid var(--primary-color);
-    transition: var(--transition);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
 }
 
 .testimonial-card:hover {
     transform: translateX(5px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
 }
 
 .stars {
@@ -799,9 +928,9 @@ button {
     color: var(--primary-color);
 }
 
-/* ==================== 
-   Contact Section
-   ==================== */
+/* ========================================
+   13. CONTACT SECTION
+   ======================================== */
 
 .contact-section {
     padding: 4rem 2rem;
@@ -871,7 +1000,8 @@ button {
     color: var(--text-color);
     font-family: inherit;
     font-size: 1rem;
-    transition: var(--transition);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    resize: vertical;
 }
 
 .form-group input:focus,
@@ -903,22 +1033,32 @@ button {
     border-radius: var(--radius-md);
     font-weight: 700;
     font-size: 1rem;
-    transition: var(--transition);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
+    cursor: pointer;
 }
 
 .submit-btn:hover {
     transform: translateY(-3px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
 }
 
-/* ==================== 
-   Footer
-   ==================== */
+.submit-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   14. FOOTER
+   ======================================== */
 
 .footer {
     background: linear-gradient(135deg, var(--text-color), var(--light-text));
     color: white;
     padding: 3rem 2rem 1rem;
+}
+
+body.dark-mode .footer {
+    background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
 }
 
 .footer-container {
@@ -947,11 +1087,17 @@ button {
 
 .footer-section a {
     opacity: 0.8;
-    transition: var(--transition);
+    transition: opacity var(--transition-base);
 }
 
-.footer-section a:hover {
+.footer-section a:hover,
+.footer-section a:focus-visible {
     opacity: 1;
+}
+
+.footer-section a:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
 }
 
 .social-links {
@@ -967,12 +1113,18 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: var(--transition);
+    transition: background-color var(--transition-base), color var(--transition-base);
+    cursor: pointer;
 }
 
 .social-icon:hover {
     background: white;
     color: var(--primary-color);
+}
+
+.social-icon:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
 }
 
 .footer-bottom {
@@ -984,11 +1136,17 @@ button {
 
 .footer-bottom a {
     text-decoration: underline;
+    transition: opacity var(--transition-base);
 }
 
-/* ==================== 
-   Cart Modal
-   ==================== */
+.footer-bottom a:hover,
+.footer-bottom a:focus-visible {
+    opacity: 1;
+}
+
+/* ========================================
+   15. CART MODAL
+   ======================================== */
 
 .cart-modal {
     position: fixed;
@@ -1003,8 +1161,8 @@ button {
     pointer-events: none;
     background: rgba(17, 24, 39, 0.65);
     backdrop-filter: blur(8px);
-    z-index: 1000;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: var(--z-modal-overlay);
+    transition: opacity var(--transition-base), visibility var(--transition-base);
 }
 
 .cart-modal.active {
@@ -1021,13 +1179,41 @@ button {
     display: flex;
     flex-direction: column;
     animation: slideInRight 0.3s ease-out;
-    box-shadow: -24px 0 80px rgba(0, 0, 0, 0.18);
+    box-shadow: var(--shadow-xl);
     border-left: 1px solid rgba(255, 255, 255, 0.35);
+    z-index: var(--z-modal);
 }
 
 body.dark-mode .cart-modal-content {
     background: rgba(14, 18, 26, 0.98);
     border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+.cart-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.close-cart {
+    background: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+    padding: 0.5rem;
+    transition: transform var(--transition-fast), opacity var(--transition-base);
+}
+
+.close-cart:hover {
+    transform: scale(1.2);
+    opacity: 0.7;
+}
+
+.close-cart:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
 .cart-body {
@@ -1059,167 +1245,14 @@ body.dark-mode .cart-modal-content {
     color: var(--text-color);
 }
 
-.order-summary {
-    flex: 0.9;
-    background: rgba(245, 247, 250, 0.95);
-    border-radius: var(--radius-xl);
-    padding: 1.5rem;
-    border: 1px solid rgba(102, 126, 234, 0.12);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    min-width: 280px;
-    max-height: calc(100vh - 120px);
-}
-
-.order-summary .summary-line {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1rem;
-    color: var(--text-color);
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(102, 126, 234, 0.12);
-}
-
-.order-summary .summary-line.total-line {
-    font-size: 1.25rem;
-    font-weight: 700;
-    border-bottom: none;
-}
-
 .cart-items-container {
     flex: 1;
     overflow-y: auto;
     padding-right: 0.5rem;
     min-height: 0;
-}
-
-.cart-item {
     display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    animation: slideUp 0.3s ease-out;
-}
-
-.order-summary .payment-section {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    border: none;
-}
-
-.order-summary .payment-options {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: var(--radius-md);
-    padding: 0.5rem;
-}
-
-.order-summary .payment-option {
-    background: transparent;
-    border: none;
-    padding: 0.7rem 0.5rem;
-}
-
-.order-summary .payment-option:hover {
-    background: rgba(102, 126, 234, 0.08);
-}
-
-.order-summary .checkout-btn {
-    margin-top: auto;
-}
-
-@media (max-width: 900px) {
-    .cart-modal-content {
-        max-width: 100%;
-        width: 100%;
-        border-left: none;
-        border-radius: 0;
-        box-shadow: none;
-    }
-
-    .cart-body {
-        flex-direction: column;
-        padding: 1rem;
-        gap: 1rem;
-    }
-
-    .order-summary {
-        width: 100%;
-        max-height: none;
-        margin-top: 0.5rem;
-    }
-
-    .cart-items-container {
-        padding-right: 0;
-    }
-}
-
-@media (max-width: 768px) {
-    .cart-items-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    .cart-items-section,
-    .order-summary {
-        width: 100%;
-    }
-
-    .cart-item {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .cart-item-image {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
-    }
-
-    .cart-item-details {
-        width: 100%;
-    }
-
-    .cart-item-quantity {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .payment-options {
-        grid-template-columns: 1fr;
-    }
-
-    .payment-option {
-        width: 100%;
-        padding: 0.85rem 0.75rem;
-    }
-
-    .close-cart {
-        font-size: 1.8rem;
-    }
-}
-
-.cart-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.close-cart {
-    background: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--text-color);
-}
-
-.cart-items-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .cart-item {
@@ -1249,6 +1282,7 @@ body.dark-mode .cart-modal-content {
 .cart-item-name {
     font-weight: 600;
     margin-bottom: 0.3rem;
+    line-height: 1.4;
 }
 
 .cart-item-price {
@@ -1261,6 +1295,7 @@ body.dark-mode .cart-modal-content {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .quantity-btn {
@@ -1270,13 +1305,21 @@ body.dark-mode .cart-modal-content {
     height: 25px;
     border-radius: 4px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .quantity-btn:hover {
     background: var(--primary-color);
     color: white;
+}
+
+.quantity-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
 .cart-item-remove {
@@ -1285,6 +1328,82 @@ body.dark-mode .cart-modal-content {
     font-weight: 700;
     cursor: pointer;
     margin-top: 0.5rem;
+    transition: opacity var(--transition-base);
+}
+
+.cart-item-remove:hover,
+.cart-item-remove:focus-visible {
+    opacity: 0.7;
+}
+
+.order-summary {
+    flex: 0.9;
+    background: rgba(245, 247, 250, 0.95);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    border: 1px solid rgba(102, 126, 234, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 280px;
+    max-height: calc(100vh - 120px);
+}
+
+body.dark-mode .order-summary {
+    background: rgba(45, 45, 45, 0.95);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.order-summary .summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    color: var(--text-color);
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.12);
+}
+
+.order-summary .summary-line.total-line {
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-bottom: none;
+}
+
+.order-summary .payment-section {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+.order-summary .payment-options {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: var(--radius-md);
+    padding: 0.5rem;
+}
+
+body.dark-mode .order-summary .payment-options {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.order-summary .payment-option {
+    background: transparent;
+    border: none;
+    padding: 0.7rem 0.5rem;
+    transition: background-color var(--transition-base);
+}
+
+.order-summary .payment-option:hover {
+    background: rgba(102, 126, 234, 0.08);
+}
+
+.order-summary .payment-option:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.order-summary .checkout-btn {
+    margin-top: auto;
 }
 
 .cart-empty {
@@ -1303,6 +1422,18 @@ body.dark-mode .cart-modal-content {
     padding: 0.8rem 1.5rem;
     border-radius: var(--radius-md);
     font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
+}
+
+.continue-shopping-btn:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.continue-shopping-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
 }
 
 .cart-footer {
@@ -1328,12 +1459,18 @@ body.dark-mode .cart-modal-content {
     border-radius: var(--radius-md);
     font-weight: 700;
     font-size: 1rem;
-    transition: var(--transition);
+    transition: transform var(--transition-fast), box-shadow var(--transition-base);
+    cursor: pointer;
 }
 
 .checkout-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.checkout-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
 }
 
 .payment-section {
@@ -1364,15 +1501,22 @@ body.dark-mode .cart-modal-content {
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(102, 126, 234, 0.15);
     color: var(--text-color);
-    transition: var(--transition);
+    transition: background-color var(--transition-base);
+    cursor: pointer;
 }
 
 .payment-option input {
     accent-color: var(--primary-color);
+    cursor: pointer;
 }
 
 .payment-option:hover {
     background: rgba(102, 126, 234, 0.14);
+}
+
+.payment-option:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
 body.dark-mode .payment-section {
@@ -1385,20 +1529,63 @@ body.dark-mode .payment-option {
     border-color: rgba(255, 255, 255, 0.08);
 }
 
-@keyframes slideInRight {
-    from {
-        transform: translateX(100%);
-    }
-    to {
-        transform: translateX(0);
-    }
+body.dark-mode .payment-option:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
-/* ==================== 
-   Responsive Design
-   ==================== */
+/* ========================================
+   16. SUCCESS MESSAGE
+   ======================================== */
+
+.success-message {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, var(--success-color), #059669);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    animation: slideUp 0.3s ease-out;
+    z-index: var(--z-modal);
+}
+
+/* ========================================
+   17. ACCESSIBILITY
+   ======================================== */
+
+/* Focus Visible for Better Keyboard Navigation */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Skip Link for Accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* ========================================
+   18. RESPONSIVE DESIGN - TABLET (768px)
+   ======================================== */
 
 @media (max-width: 768px) {
+    /* Navigation */
     .hamburger-menu {
         display: flex;
     }
@@ -1411,9 +1598,12 @@ body.dark-mode .payment-option {
         background-color: var(--bg-color);
         width: 100%;
         text-align: center;
-        transition: 0.3s;
+        transition: left var(--transition-base);
         padding: 2rem 0;
         gap: 0;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+        z-index: var(--z-dropdown);
     }
 
     .nav-menu.active {
@@ -1434,6 +1624,7 @@ body.dark-mode .payment-option {
         font-size: 1.5rem;
     }
 
+    /* Hero Section */
     .hero {
         padding: 4rem 2rem;
         min-height: 400px;
@@ -1462,6 +1653,7 @@ body.dark-mode .payment-option {
         font-size: 2rem;
     }
 
+    /* Search & Filter */
     .search-filter-container {
         flex-direction: column;
     }
@@ -1478,29 +1670,97 @@ body.dark-mode .payment-option {
         align-self: stretch;
     }
 
+    /* Products Grid */
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1.5rem;
     }
 
+    /* Contact Section */
     .contact-content {
         grid-template-columns: 1fr;
     }
 
-    .cart-modal-content {
-        max-width: 100%;
-    }
-
+    /* Newsletter */
     .newsletter-form {
         flex-direction: column;
     }
 
+    /* Section Title */
     .section-title {
+        font-size: 1.8rem;
+    }
+
+    /* Cart Modal */
+    .cart-modal-content {
+        max-width: 100%;
+        width: 100%;
+        border-left: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .cart-body {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .cart-items-section,
+    .order-summary {
+        width: 100%;
+    }
+
+    .cart-items-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .cart-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cart-item-image {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .cart-item-details {
+        width: 100%;
+    }
+
+    .order-summary {
+        max-height: none;
+        margin-top: 0.5rem;
+    }
+
+    .cart-items-container {
+        padding-right: 0;
+    }
+
+    .payment-options {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-option {
+        width: 100%;
+        padding: 0.85rem 0.75rem;
+    }
+
+    .close-cart {
         font-size: 1.8rem;
     }
 }
 
+/* ========================================
+   19. RESPONSIVE DESIGN - MOBILE (480px)
+   ======================================== */
+
 @media (max-width: 480px) {
+    /* Navbar */
     .navbar-container {
         padding: 1rem;
         gap: 1rem;
@@ -1515,6 +1775,7 @@ body.dark-mode .payment-option {
         height: 40px;
     }
 
+    /* Hero */
     .hero-title {
         font-size: 1.8rem;
     }
@@ -1523,6 +1784,7 @@ body.dark-mode .payment-option {
         font-size: 0.95rem;
     }
 
+    /* Products Grid */
     .products-grid {
         grid-template-columns: 1fr;
     }
@@ -1531,41 +1793,47 @@ body.dark-mode .payment-option {
         height: 200px;
     }
 
+    /* Category Cards */
     .category-cards {
         grid-template-columns: 1fr;
     }
 
+    /* Testimonials */
     .testimonials-grid {
         grid-template-columns: 1fr;
     }
 
+    /* Footer */
     .footer-content {
         grid-template-columns: 1fr;
     }
 
+    /* Search Input */
     .search-input {
         padding: 0.7rem 2rem 0.7rem 0.8rem;
         font-size: 16px;
     }
-}
-.success-message {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-hover);
-    animation: slideUp 0.3s ease-out;
-    z-index: 1001;
-}
 
-/* Focus Visible for Accessibility */
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
+    /* Contact */
+    .contact-content {
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    /* Section Spacing */
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .newsletter-container {
+        padding: 0 1rem;
+    }
+
+    .newsletter-container h2 {
+        font-size: 1.5rem;
+    }
 }
