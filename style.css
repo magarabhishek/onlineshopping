@@ -1,11 +1,3 @@
-/* ============================================
-   FASHION HUB - COMPLETE STYLESHEET
-   Modern, Responsive Online Clothing Store
-   ============================================ */
-
-/* ==================== 
-   Root Variables & Base Styles
-   ==================== */
 
 :root {
     /* Color Scheme - Light Mode */
@@ -123,10 +115,6 @@ button {
         visibility: hidden;
     }
 }
-
-/* ==================== 
-   Navigation Bar
-   ==================== */
 
 .navbar {
     background: var(--bg-color);
@@ -1560,11 +1548,6 @@ body.dark-mode .payment-option {
         font-size: 16px;
     }
 }
-
-/* ==================== 
-   Success Message Animation
-   ==================== */
-
 .success-message {
     position: fixed;
     bottom: 2rem;
@@ -1585,4 +1568,57 @@ select:focus-visible,
 textarea:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
+}
+/* Mobile Phones */
+@media (max-width: 576px) {
+    .navbar-container {
+        padding: 1rem;
+    }
+
+    .nav-menu {
+        display: none;
+    }
+
+    .hamburger-menu {
+        display: flex;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero {
+        padding: 4rem 1rem;
+        min-height: auto;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-content {
+        grid-template-columns: 1fr;
+    }
+
+    .newsletter-form {
+        flex-direction: column;
+    }
+}
+
+/* Tablets */
+@media (min-width: 577px) and (max-width: 992px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-title {
+        font-size: 2.8rem;
+    }
+}
+
+/* Desktop */
+@media (min-width: 993px) {
+    .products-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
