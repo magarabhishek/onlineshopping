@@ -97,6 +97,14 @@ button {
 }
 
 /* Scrollbar Styling - Modern Browsers */
+
+/* Firefox Scrollbar Support */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--light-bg);
+}
+
+/* Webkit Browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -114,6 +122,11 @@ button {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-color);
+}
+
+/* Dark Mode Scrollbar Support */
+body.dark-mode {
+    scrollbar-color: var(--secondary-color) var(--light-bg);
 }
 
 /* ========================================
